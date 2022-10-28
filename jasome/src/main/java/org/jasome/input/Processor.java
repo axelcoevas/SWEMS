@@ -7,9 +7,9 @@ import org.jasome.util.ProjectMetadata;
 import java.util.HashSet;
 import java.util.Set;
 
-
 //TODO: try to figure out a way to move this to org.jasome.metrics - it needs to access a package-level method on Code which prevents this
 public class Processor {
+
     private Set<Calculator<Project>> projectCalculators;
     private Set<Calculator<Package>> packageCalculators;
     private Set<Calculator<Type>> typeCalculators;
@@ -71,25 +71,5 @@ public class Processor {
             Set<Metric> projectMetrics = projectMetricCalculator.calculate(project);
             project.addMetrics(projectMetrics);
         });
-
-
-//        for (Package aPackage : project.getPackages()) {
-//            System.out.println(aPackage.getName());
-//            System.out.println("+" + aPackage.getMetrics());
-//
-//            for (Type type : aPackage.getTypes()) {
-//
-//                System.out.println("  " + type.getName());
-//                System.out.println("  +" + type.getMetrics());
-//
-//                for (Method method : type.getMethods()) {
-//
-//                    System.out.println("    " + method.getName());
-//                    System.out.println("    +" + aPackage.getMetrics());
-//
-//                }
-//            }
-//
-//        }
     }
 }

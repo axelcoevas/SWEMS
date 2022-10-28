@@ -5,7 +5,6 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.jasome.input.FileScanner;
 import org.jasome.input.Project;
@@ -18,7 +17,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class CommandLineExecutive {
 
@@ -29,7 +27,6 @@ public class CommandLineExecutive {
         {
 
             //TODO: still need a way to do excludes, regex or something.  joda has an example package I want to ignore
-
             Option help = new Option("h", "help", false, "print this message");
             Option version = new Option("v", "version", false, "print the version information and exit");
             Option excludetests = new Option("xt", "excludetests", false, "exclude test files from scanning");
@@ -41,18 +38,12 @@ public class CommandLineExecutive {
             options.addOption(output);
         }
 
+        System.out.println(args[0]);
+
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-        if (line.hasOption("help")) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("jasome <source directory>", options);
-            System.exit(0);
-        } else if (line.hasOption("version")) {
-            String v = CommandLineExecutive.class.getPackage().getImplementationVersion();
-            System.out.println("jasome version: " + v);
-            System.exit(0);
-        } else if (line.getArgs().length != 1) {
+        if (line.getArgs().length != 1) {
             System.out.println("No source directory provided.");
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("jasome <java file or directory>", options);
@@ -66,13 +57,9 @@ public class CommandLineExecutive {
 
             scanner.setFilter(fileFilter);
 
-            long startTime = System.currentTimeMillis();
-
             Project scannerOutput = scanner.scan();
 
             ProcessorFactory.getProcessor().process(scannerOutput);
-
-            long endTime = System.currentTimeMillis();
 
             try {
                 Document outputDocument = new XMLOutputter().output(scannerOutput);
@@ -84,34 +71,19 @@ public class CommandLineExecutive {
                 DOMSource source = new DOMSource(outputDocument);
 
                 StreamResult result;
-                if (line.hasOption("output")) {
-
-                    String outputLocation = line.getOptionValue("output");
-                    File tempOutputFile = new File(outputLocation + ".tmp");
-                    File finalOutputFile = new File(outputLocation).getAbsoluteFile();
-                    if(finalOutputFile.getParentFile()!=null) {
-                        finalOutputFile.getParentFile().mkdirs();
-                    }
-
-                    result = new StreamResult(tempOutputFile);
-                    transformer.transform(source, result);
-                    tempOutputFile.renameTo(finalOutputFile);
-                    System.out.println("Operation completed in " + ((endTime - startTime) / 1000) + " seconds, output written to " + finalOutputFile);
-                } else {
-                    result = new StreamResult(System.out);
-                    transformer.transform(source, result);
-                }
+                result = new StreamResult(System.out);
+                transformer.transform(source, result);
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
             } catch (TransformerException e) {
                 e.printStackTrace();
             }
 
-
         }
     }
 
     private static class ExcludeTestsFilter implements IOFileFilter {
+
         private static Set<String> testSuffixes = ImmutableSet.of(
                 "Test",
                 "Spec",
@@ -130,14 +102,13 @@ public class CommandLineExecutive {
                 "sample"
         );
 
-
         private IOFileFilter underlyingFilter;
 
         public ExcludeTestsFilter(File baseDir) {
             String baseDirPath = baseDir.getPath();
             IOFileFilter doesNotHaveTestSuffix = new NotFileFilter(FileFilterUtils.asFileFilter(path -> {
-                for(String testSuffix: testSuffixes) {
-                    if(path.getName().endsWith(testSuffix+".java")) {
+                for (String testSuffix : testSuffixes) {
+                    if (path.getName().endsWith(testSuffix + ".java")) {
                         return true;
                     }
                 }
@@ -147,8 +118,8 @@ public class CommandLineExecutive {
             IOFileFilter isNotInTestSubDirectory = new NotFileFilter(FileFilterUtils.asFileFilter(path -> {
                 String pathName = path.getPath();
                 String relativePath = StringUtils.removeStart(pathName, baseDirPath);
-                for(String testDirectory: testDirectories) {
-                    if(relativePath.contains(File.separator+testDirectory+File.separator)) {
+                for (String testDirectory : testDirectories) {
+                    if (relativePath.contains(File.separator + testDirectory + File.separator)) {
                         return true;
                     }
                 }

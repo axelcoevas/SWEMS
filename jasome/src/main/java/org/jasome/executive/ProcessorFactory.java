@@ -7,38 +7,50 @@ class ProcessorFactory {
     static Processor getProcessor() {
         Processor processor = new Processor();
 
+        // RTLOC
         processor.registerTypeCalculator(new RawTotalLinesOfCodeCalculator());
 
-        processor.registerTypeCalculator(new NumberOfFieldsCalculator());
-
+        // TLOC
         processor.registerProjectCalculator(new TotalLinesOfCodeCalculator.ProjectCalculator());
         processor.registerPackageCalculator(new TotalLinesOfCodeCalculator.PackageCalculator());
         processor.registerTypeCalculator(new TotalLinesOfCodeCalculator.TypeCalculator());
         processor.registerMethodCalculator(new TotalLinesOfCodeCalculator.MethodCalculator());
 
+        // Complejidad ciclomática
         processor.registerMethodCalculator(new CyclomaticComplexityCalculator());
+
+        // Métodos ponderados por clase
         processor.registerTypeCalculator(new WeightedMethodsCalculator());
 
-        processor.registerMethodCalculator(new NumberOfParametersCalculator());
-        processor.registerPackageCalculator(new NumberOfClassesCalculator());
+        // CF
+        processor.registerTypeCalculator(new CouplingFactorCalculator());
 
-        processor.registerTypeCalculator(new SpecializationIndexCalculator());
-
-        processor.registerPackageCalculator(new RobertMartinCouplingCalculator());
-
-        processor.registerMethodCalculator(new NestedBlockDepthCalculator());
+        // LCOM
         processor.registerTypeCalculator(new LackOfCohesionMethodsCalculator());
 
-        processor.registerTypeCalculator(new ClassInheritanceCalculator());
+        // SIX
+        processor.registerTypeCalculator(new SpecializationIndexCalculator());
 
+        // MIF
+        // AIF
+        // MHF
+        // AHF
         processor.registerTypeCalculator(new MethodAndAttributeInheritanceCalculator());
 
-        processor.registerMethodCalculator(new FanCalculator());
-        processor.registerTypeCalculator(new LinkCalculator());
-        processor.registerMethodCalculator(new McclureCalculator());
+        // NOCh
+        processor.registerTypeCalculator(new ClassInheritanceCalculator());
 
-        processor.registerTypeCalculator(new TypeAggregatorCalculator());
-        processor.registerPackageCalculator(new PackageAggregatorCalculator());
         return processor;
+        // processor.registerTypeCalculator(new NumberOfFieldsCalculator());
+        // processor.registerMethodCalculator(new NumberOfParametersCalculator());
+        // processor.registerPackageCalculator(new NumberOfClassesCalculator());
+        // processor.registerPackageCalculator(new RobertMartinCouplingCalculator());
+        // ***
+        // processor.registerMethodCalculator(new NestedBlockDepthCalculator());
+        // processor.registerMethodCalculator(new FanCalculator());
+        // processor.registerTypeCalculator(new LinkCalculator());
+        // processor.registerMethodCalculator(new McclureCalculator()); ***
+        // processor.registerPackageCalculator(new PackageAggregatorCalculator());
+        // processor.registerTypeCalculator(new TypeAggregatorCalculator()); ***
     }
 }
