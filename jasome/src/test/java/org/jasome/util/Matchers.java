@@ -3,8 +3,8 @@ package org.jasome.util;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.jasome.metrics.Metric;
-import org.jasome.metrics.value.NumericValue;
+import com.ipn.swems.code.metrics.Metric;
+import com.ipn.swems.code.metrics.value.NumericValue;
 
 import java.util.Optional;
 import java.util.Set;
